@@ -9,48 +9,41 @@ module.exports = function(app, express) {
 
 	var apiRouter = express.Router()
 
-	apiRouter.post('/auth', config.auth)
-
+	apiRouter.post('/login', config.giveToken)
 
 // all non-auth requests above this line
 	apiRouter.use(config.decodeToken)
 
-	apiRouter.use('/player/:id', function() {'load player'})
-	apiRouter.use('/team/:id', function() {'load team'})
-	apiRouter.use('/game/:id', function() {'load game'})
-
-
-
+// Player routes
 	apiRouter.route('/player')
-		.post(player.create) // create player
+		.post(player.create)
 
 	apiRouter.use('/player/:id', player.load)
-
 	apiRouter.route('/player/:id')
-		.get(player.get) // load player data
-		.put(player.update) // update player
+		.get(player.get)
+		.put(player.update
 
-	apiRouter.route('/player/teams/:id')
-		.get(team.playerTeams)
-
+// Team routes
 	apiRouter.route('/team')
-		.post(team.create) // create team
+		.post(team.create)
 
 	apiRouter.use('/team/:id', team.load)
-
 	apiRouter.route('/team/:id')
-		.get(team.get) // load team data
-		.put(team.update) // update team
+		.get(team.get)
+		.put(team.update)
 
+	apiRouter.route('/player/teams')
+		.get(team.playerTeams)
+
+// Game routes
 	apiRouter.route('/game')
-		.post(game.create) // init new game
+		.post(game.create)
 
 	apiRouter.use('/game/:id', game.load)
-
 	apiRouter.route('/game/:id')
-		.put(game.update) // update game
-		.post(game.point) // post new point
-
-	apiRouter.use('/captain', function() {'authCaptain()'})
+		.put(game.point)
+		.post(game.update)
 
 }
+
+/* Will have to update token when players are added to new teams */

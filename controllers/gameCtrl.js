@@ -4,15 +4,29 @@ var Game = models.Game
 var gameCtrl = {}
 
 gameCtrl.create = function(req, res) {
-	'create new game'
+	Game.create({
+		teamA : req.body.teamA,
+		teamB : req.body.teamB || null,
+	}, function(err, doc) {
+		if (err)  res.send(err)
+		else 	  res.send(doc)
+	})
 }
 
 gameCtrl.load = function(req, res) {
-	'load game: send err or assign to req.game'
+	Game.findById(req.params.id, function(err, doc) {
+		if (err)  res.send(err)
+		else {
+			req.game = doc
+			next()
+		}
+	})
 }
 
 gameCtrl.point = function(req, res) {
-	'record new point'
+	req.game.points.push(req.body.point)
+	req.game.save()
+		.exec(function(doc) { res.send(doc) })
 }
 
 gameCtrl.update = function(req, res) {
