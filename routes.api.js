@@ -1,18 +1,14 @@
-var player = require('./controllers/playerCtrl')
-var team = require('./controllers/teamCtrl')
-var game = require('./controllers/gameCtrl')
-
-var config = require('./config')
-var secret = config.secret
+var player = require('./controllers/playerCtrl'),
+	team   = require('./controllers/teamCtrl'),
+	game   = require('./controllers/gameCtrl'),
+	auth   = require('./auth')
 
 module.exports = function(app, express) {
 
 	var apiRouter = express.Router()
 
-	apiRouter.post('/login', config.giveToken)
-
 // all non-auth requests above this line
-	apiRouter.use(config.decodeToken)
+	apiRouter.use(auth.decodeToken)
 
 // Player routes
 	apiRouter.route('/player')
@@ -21,7 +17,7 @@ module.exports = function(app, express) {
 	apiRouter.use('/player/:id', player.load)
 	apiRouter.route('/player/:id')
 		.get(player.get)
-		.put(player.update
+		.put(player.update)
 
 // Team routes
 	apiRouter.route('/team')
@@ -44,6 +40,6 @@ module.exports = function(app, express) {
 		.put(game.point)
 		.post(game.update)
 
-}
+	return apiRouter
 
-/* Will have to update token when players are added to new teams */
+}
