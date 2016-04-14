@@ -17,7 +17,6 @@ mongoose.connect(config.database)
 
 app.use('/', function(req, res, next) {
 	console.log('activity')
-	console.log('req.url: ', req.url)
 	next()
 })
 

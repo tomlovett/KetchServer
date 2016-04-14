@@ -15,6 +15,7 @@ module.exports = function(app, express) {
 		.post(player.create)
 
 	apiRouter.use('/player/:id', player.load)
+
 	apiRouter.route('/player/:id')
 		.get(player.get)
 		.put(player.update)

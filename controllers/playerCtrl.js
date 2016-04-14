@@ -1,5 +1,6 @@
 var models = require('../models/models.js')
-var Player = models.Player
+// console.log('models.Player: ', models.Player)
+var Player = models['Player']
 
 module.exports = {
 
@@ -9,7 +10,6 @@ module.exports = {
 			last   : req.body.last,
 			handles: req.body.handles,
 			gender : req.body.gender,
-			email  : req.body.email,
 		}, function(err, doc) {
 			if (err) res.send(err)
 			else     res.send(doc)
@@ -17,8 +17,8 @@ module.exports = {
 	},
 
 	load: function(req, res, next) {
-		console.log('req.params.id: ', req.params.id)
-		Player.findByID(req.params.id, function(err, doc) {
+		Player.findById(req.params.id, function(err, doc) {
+			console.log('got to here')
 			if (err)  res.send(err) // handle not found; but should never happen
 			else {
 				req.player = doc

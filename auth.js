@@ -22,12 +22,13 @@ module.exports = {
 
 	decodeToken : function(req, res, next) {
 		console.log('authenticating...')
-		var token = req.body.token || req.headers['x-access-token']
+		var token = req.headers['x-access-token'] || req.body.token
 		if (token) {
 			jwt.verify(token, config.secret, function(err, decoded) {
 				if (err) {
 					return res.json({success: false, message: 'Failed to authenticate token.'})
 				} else {
+					console.log('decodeToken verified. decodeToken -> user: ', decoded.user)
 					req.user = decoded.user
 					next()
 				}
