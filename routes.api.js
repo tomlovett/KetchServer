@@ -1,6 +1,7 @@
 var player = require('./controllers/playerCtrl'),
 	team   = require('./controllers/teamCtrl'),
 	game   = require('./controllers/gameCtrl'),
+	user   = require('./controllers/userCtrl'),
 	auth   = require('./auth')
 
 module.exports = function(app, express) {
@@ -12,34 +13,36 @@ module.exports = function(app, express) {
 
 // Player routes
 	apiRouter.route('/player')
+		.get(player.me)
 		.post(player.create)
+		.put(player.update)
 
 	apiRouter.use('/player/:id', player.load)
 
 	apiRouter.route('/player/:id')
 		.get(player.get)
-		.put(player.update)
 
 // Team routes
 	apiRouter.route('/team')
 		.post(team.create)
+		.put(team.update)
 
 	apiRouter.use('/team/:id', team.load)
 	apiRouter.route('/team/:id')
 		.get(team.get)
-		.put(team.update)
 
-	apiRouter.route('/player/teams')
+	apiRouter.route('/team/playerTeams')
 		.get(team.playerTeams)
 
 // Game routes
 	apiRouter.route('/game')
 		.post(game.create)
+		.put(game.update)
 
 	apiRouter.use('/game/:id', game.load)
-	apiRouter.route('/game/:id')
+
+	apiRouter.route('/game/:id') // unnecessary?
 		.put(game.point)
-		.post(game.update)
 
 	return apiRouter
 

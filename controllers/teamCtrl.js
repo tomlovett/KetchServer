@@ -1,8 +1,6 @@
 var models = require('../models/models.js')
 var Team = models.Team
 
-var teamCtrl = {}
-
 module.exports = {
 
 	checkCaptain: function(req, res, next) {
@@ -17,7 +15,7 @@ module.exports = {
 			color2  : req.body.color2,
 			roster  : req.body.roster,
 			captains: req.body.captains
-
+			// double-check with front-end
 		}, function(err, doc) {
 			if (err) res.send(err)
 			else     res.send(doc)
@@ -47,7 +45,7 @@ module.exports = {
 		if (data.captains) req.team.captains = data.captains
 		req.team.save(function(err, doc) {
 			if (err) res.send(err)
-			else res.send(doc)
+			else 	 res.send(doc)
 		})
 	},
 

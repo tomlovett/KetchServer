@@ -1,31 +1,30 @@
 var models = require('../models/models.js')
 var Game = models.Game
 
-var gameCtrl = {}
-
 module.exports = {
 
 	create: function(req, res) {
-		Game.create({
+		Game.create({  // req.body
 			teamA : req.body.teamA,
 			teamB : req.body.teamB || null,
 		}, function(err, doc) {
-			if (err)  res.send(err)
-			else 	  res.send(doc._id)
+			if (err)  res.json({success: false, message: 'Database error.'})
+			else 	  res.json({success: true,  game: doc})
 		})
 	},
 
 	load: function(req, res) {
 		Game.findById(req.params.id, function(err, doc) {
-			if (err)  res.send(err)
+			if (err)  res.json({success: false, message: 'Database error.'})
 			else {
-				req.game = doc
+				req.token.game = doc
 				next()
 			}
 		})
 	},
 
 	point: function(req, res) {
+		// simply updating the doc, right?
 		req.game.points.push(req.body.point)
 		req.game.save()
 			.exec(function(doc) { res.send(doc) })

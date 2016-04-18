@@ -7,8 +7,8 @@ module.exports = function(app, express) {
 
 	var authRouter = express.Router()
 
-	authRouter.post('/login',  auth.giveToken)
-	authRouter.post('/signup', auth.newUser)
+	authRouter.post('/login',  auth.login)
+	authRouter.post('/signup', auth.signup)
 
 	authRouter.get('/tutorial', auth.tutorial)
 
