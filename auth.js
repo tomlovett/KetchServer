@@ -56,7 +56,6 @@ module.exports = {
 			jwt.verify(token, config.secret, function(err, decoded) {
 				if (err) {
 					return res.json({success: false, message: 'Bad token.'})
-					// is return the correct syntax? can I not send from here?
 				} else {
 					req.token = decoded
 					next()

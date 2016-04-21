@@ -13,11 +13,9 @@ module.exports = function(app, express) {
 
 // Player routes
 	apiRouter.route('/player')
-		.get(player.me)
+		// .get(player.me)
 		.post(player.create)
 		.put(player.update)
-
-	apiRouter.use('/player/:id', player.load)
 
 	apiRouter.route('/player/:id')
 		.get(player.get)
@@ -27,22 +25,24 @@ module.exports = function(app, express) {
 		.post(team.create)
 		.put(team.update)
 
-	apiRouter.use('/team/:id', team.load)
-	apiRouter.route('/team/:id')
-		.get(team.get)
+	apiRouter.route('/team/roster/:id')
+		.get(team.roster)
+
+	apiRouter.route('/team/rosterMove')
+		.put(team.rosterMove)
 
 	apiRouter.route('/team/playerTeams')
 		.get(team.playerTeams)
+		
+	apiRouter.route('/team/:id')
+		.get(team.get)
 
 // Game routes
 	apiRouter.route('/game')
 		.post(game.create)
 		.put(game.update)
 
-	apiRouter.use('/game/:id', game.load)
-
-	apiRouter.route('/game/:id') // unnecessary?
-		.put(game.point)
+	// apiRouter.use('/game/:id', game.load)
 
 	return apiRouter
 

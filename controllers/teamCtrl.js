@@ -13,12 +13,14 @@ module.exports = {
 			name    : req.body.name,
 			color1  : req.body.color1,
 			color2  : req.body.color2,
-			roster  : req.body.roster,
-			captains: req.body.captains
-			// double-check with front-end
+			roster  : [req.token.player],
+			captains: [req.token.player]
 		}, function(err, doc) {
 			if (err) res.send(err)
-			else     res.send(doc)
+			else     {
+				console.log('createTeam -> doc: ', doc)
+				res.send(doc)
+			}
 		})
 	},
 
@@ -49,8 +51,34 @@ module.exports = {
 		})
 	},
 
+	roster: function(req, res) {
+		Team.findById(req.params.id).select('roster').populate('roster')
+			.exec(function(err, team) {
+				if (err)	res.send(err)
+				else		res.send(team.roster)
+			})
+	},
+
 	playerTeams: function(req, res) {
-		'return all teams player is on'
+		Team.find().where('roster').in([req.token.player])
+			.exec(function(err, docs) {
+				res.send(err || docs)
+			})
+	},
+
+	rosterMove: function(req, res) {
+		Team.findById(req.body.team, function(err, team) {
+			if (req.body.add) {
+				team.roster.push(req.body.player)
+			} else {
+				var index = team.roster.indexOf(req.body.player)
+				team.roster.splice(index, 1)
+			}
+			team.save(function(err, doc) {
+				if (err)	res.send(err)
+				else		res.send(doc)
+			})
+		})
 	},
 
 }

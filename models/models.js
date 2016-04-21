@@ -22,8 +22,8 @@ var teamSchema = new mongoose.Schema({
 	short   : String,
 	color1  : String,
 	color2  : String,
-	roster  : Array,
-	captains: [ObjectId],
+	roster  : [{ type: ObjectId, ref: 'Player'}],
+	captains: [{ type: ObjectId, ref: 'Player'}],
 	misc    : Object
 })
 
