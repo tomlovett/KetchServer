@@ -24,7 +24,7 @@ var teamSchema = new mongoose.Schema({
 	color2  : String,
 	roster  : [{ type: ObjectId, ref: 'Player'}],
 	captains: [{ type: ObjectId, ref: 'Player'}],
-	misc    : Object
+	misc    : Object,
 })
 
 var gameSchema = new mongoose.Schema({
@@ -45,16 +45,8 @@ userSchema.pre('save', function(next) {
 	})
 })
 
-userSchema.methods.comparePassword = function(password) {
+userSchema.methods.check = function(password) {
 	return bcrypt.compareSync(password, this.password)
-}
-
-var send = function(err, doc, req, res) {
-	console.log('send fired')
-	console.log('req, res: ', req, res)
-	console.log('err, doc:', err, doc)
-	if (err)   	res.send(err)
-	else		res.send(doc)
 }
 
 module.exports = {
@@ -62,5 +54,4 @@ module.exports = {
 	Player: mongoose.model('Player', playerSchema),
 	Team  : mongoose.model('Team',   teamSchema),
 	Game  : mongoose.model('Game',   gameSchema),
-	send  : send
 }

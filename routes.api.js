@@ -12,15 +12,17 @@ module.exports = function(app, express) {
 	apiRouter.use(auth.decodeToken)
 
 // Player routes
-	apiRouter.route('/player')
-		// .get(player.me)
-		.post(player.create)
-		.put(player.update)
-
 	apiRouter.route('/player/:id')
 		.get(player.get)
 
+	apiRouter.route('/player')
+		.post(player.create)
+		.put(player.update)
+
 // Team routes
+	apiRouter.route('/team/:id')
+		.get(team.get)
+
 	apiRouter.route('/team')
 		.post(team.create)
 		.put(team.update)
@@ -34,15 +36,11 @@ module.exports = function(app, express) {
 	apiRouter.route('/team/playerTeams')
 		.get(team.playerTeams)
 		
-	apiRouter.route('/team/:id')
-		.get(team.get)
 
 // Game routes
 	apiRouter.route('/game')
 		.post(game.create)
 		.put(game.update)
-
-	// apiRouter.use('/game/:id', game.load)
 
 	return apiRouter
 

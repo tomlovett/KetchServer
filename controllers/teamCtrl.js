@@ -1,6 +1,23 @@
 var models = require('../models/models.js')
 var Team = models.Team
 
+var bounce = function(res, msg) {
+	res.json({success: false, message: msg})
+}
+
+var success = function(res, data) {
+	data['success'] = true
+	res.json(data)
+}
+
+var addOrDrop = function(req, res, team) {
+	if (req.body.add) 	team.roster.push(req.body.player)
+	else {
+		var index = team.roster.indexOf(req.body.player)
+		team.roster.splice(index, 1)
+	}
+}
+
 module.exports = {
 
 	checkCaptain: function(req, res, next) {
@@ -9,74 +26,69 @@ module.exports = {
 	},
 
 	create: function(req, res) {
-		Team.create({
-			name    : req.body.name,
-			color1  : req.body.color1,
-			color2  : req.body.color2,
-			roster  : [req.token.player],
-			captains: [req.token.player]
-		}, function(err, doc) {
-			if (err) res.send(err)
-			else     {
-				console.log('createTeam -> doc: ', doc)
-				res.send(doc)
-			}
+		req.body.roster   = [req.token.player]
+		req.body.captains = [req.token.player]
+		Team.create(req.body, function(err, teamDoc) {
+			if (err) 	bounce(res, err)
+			else     	success(res, { team: teamDoc })
 		})
 	},
 
-	load: function(req, res, next) {
-		Team.findById(req.params.id, function(err, doc) {
-			if (err) res.send(err)
-			else {
-				req.team = doc
-				next()
-			}
+	get: function(req, res, next) {
+		Team.findById(req.params.id, function(err, teamDoc) {
+			if (err)  	bounce(res, err)
+			else 		success(res, { team: teamDoc })
 		})
-	},
-
-	get: function(req, res) {
-		res.send(req.team)
 	},
 
 	update: function(req, res) {
-		var data = req.body.team
-		if (data.name)     req.team.name     = data.name
-		if (data.color1)   req.team.color1   = data.color1
-		if (data.color2)   req.team.color2   = data.color2
-		if (data.roster)   req.team.roster   = data.roster
-		if (data.captains) req.team.captains = data.captains
-		req.team.save(function(err, doc) {
-			if (err) res.send(err)
-			else 	 res.send(doc)
-		})
+		Team.findByIdAndUpdate(req.body._id, req.body, {new:true},
+			function(err, doc) {
+				if (err) 	bounce(res, err)
+				else 	 	success(res, { team: teamDoc })
+			})
+		// var data = req.body.team
+		// if (data.name)     req.team.name     = data.name
+		// if (data.color1)   req.team.color1   = data.color1
+		// if (data.color2)   req.team.color2   = data.color2
+		// if (data.roster)   req.team.roster   = data.roster
+		// if (data.captains) req.team.captains = data.captains
+		// req.team.save(function(err, teamDoc) {
+		// 	if (err) 	bounce(res, err)
+		// 	else 	 	success(res, { team: teamDoc })
+		// })
 	},
 
 	roster: function(req, res) {
 		Team.findById(req.params.id).select('roster').populate('roster')
-			.exec(function(err, team) {
-				if (err)	res.send(err)
-				else		res.send(team.roster)
+			.exec(function(err, teamDoc) {
+				if (err)	bounce(res, err)
+				else		success(res, { roster: teamDoc.roster })
 			})
 	},
 
 	playerTeams: function(req, res) {
 		Team.find().where('roster').in([req.token.player])
-			.exec(function(err, docs) {
-				res.send(err || docs)
+			.exec(function(err, teamDocs) {
+				if (err)	bounce(res, err)
+				else		success(res, { teams: teamDocs })
 			})
 	},
 
 	rosterMove: function(req, res) {
 		Team.findById(req.body.team, function(err, team) {
-			if (req.body.add) {
-				team.roster.push(req.body.player)
-			} else {
-				var index = team.roster.indexOf(req.body.player)
-				team.roster.splice(index, 1)
+			if (err)	bounce(res, err)
+			else {
+				if (req.body.add) 	team.roster.push(req.body.player)
+				else {
+					var index = team.roster.indexOf(req.body.player)
+					team.roster.splice(index, 1)
+				}
+				// test replacing this section with addOrDrop
 			}
-			team.save(function(err, doc) {
-				if (err)	res.send(err)
-				else		res.send(doc)
+			team.save(function(err, teamDoc) {
+				if (err)	bounce(res, err)
+				else		success(res, { team: teamDoc })
 			})
 		})
 	},

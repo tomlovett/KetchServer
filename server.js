@@ -10,15 +10,9 @@ var app = express()
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use(cors())
-// console.log('cors: ', cors)
 app.use(logger('dev'))
 
 mongoose.connect(config.database)
-
-app.use('/', function(req, res, next) {
-	console.log('activity')
-	next()
-})
 
 var authRoutes = require('./routes.auth')(app, express)
 app.use('/auth', authRoutes)

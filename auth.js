@@ -4,59 +4,51 @@ var models = require('./models/models.js')
 var User   = models.User
 var Player = models.Player
 
-// var noUser = f()
-// var badPassword = f()
-// var setToken = f()
+var sendToken = function(res, user) {
+	var data  = { user: user._id, player: user.player || null }
+	var token = jwt.sign(data, config.secret)
+	res.send({success: true, token: token})
+}
+
+var bounce = function(res, msg) {
+	res.json({success: false, message: msg})
+}
 
 module.exports = {
 	tutorial: function(req, res) {
-		var token = jwt.sign({ user: 'tutorialUser', player: 'hero' })
-		res.json({success: true, token: token})
+		var user = 'playerID for tutorial'
+		// find first?
+		sendToken(res, user)
 	},
 	
 	login: function(req, res) {
 		User.findOne({email: req.body.email}, function (err, user) {
-			if (err) 	res.json({success: false, message: 'Database error.'})
-			if (!user) { 
-				res.json({success: false, message: 'Email not found.' })
-			} else {
-				if (user.comparePassword(req.body.password)) {
-					var token = jwt.sign({
-						user  : user._id,
-						player: user.player || null
-					}, config.secret)
-					res.json({success: true, token: token})
-				} else {
-					res.json({success: false, message: 'Incorrect password.'})
-				}
+			if (err) 		bounce(res, 'Database error.')
+			if (!user) 		bounce(res, 'Email not found.')
+			else {
+				var password = req.body.password
+				if (user.check(password)) 	sendToken(res, user)
+				else 						bounce(res, 'Incorrect password.')
 			}
 		})
 	},
 
 	signup: function(req, res) { // passed in {linked: true} on client side
-		Player.create(req.body, function(err, playerDoc) {
-			req.body.player = playerDoc._id
-			User.create(req.body, function(err, userDoc) {
-				if (err)   res.json({success: false, message: 'Database error.'})
-				else  { 
-					var token = jwt.sign({
-						user  : userDoc._id,
-						player: userDoc.player || null
-					}, config.secret)
-					res.json({success: true, token: token})
-				}
+		Player.create(req.body, function(err, player) {
+			req.body.player = player._id	// add player._id to user model
+			User.create(req.body, function(err, user) {
+				if (err)  	bounce(res, 'Database error.')
+				else  		sendToken(res, user)
 			})
 		})
 	},
 
 	decodeToken: function(req, res, next) {
-		console.log('authenticating...')
 		var token = req.headers['x-access-token'] || req.body.token
 		if (token) {
 			jwt.verify(token, config.secret, function(err, decoded) {
-				if (err) {
-					return res.json({success: false, message: 'Bad token.'})
-				} else {
+				if (err)	 return bounce(res, 'Bad token.')
+				else { 
 					req.token = decoded
 					next()
 				}

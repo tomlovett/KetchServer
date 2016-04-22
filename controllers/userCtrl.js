@@ -2,7 +2,21 @@ var models = require('../models/models.js')
 var jwt    = require('jsonwebtoken')
 var config = require('../config')
 var User   = models.User
-var Player = models.Player
+// var Player = models.Player
+
+/* 
+none of this is being used.
+can almost surely delete this file later; except for future, more well-rounded functionality
+*/
+
+var bounce = function(res, msg) {
+	res.json({success: false, message: msg})
+}
+
+var success = function(res, data) {
+	data['success'] = true
+	res.json(data)
+}
 
 module.exports = {
 
@@ -19,11 +33,11 @@ module.exports = {
 		Player.update('User.player', { linked: true })
 	},
 
-	newUser: function(req, res) {
-		User.create(req.body, function(err, doc) {
-			if (err)    res.json({success: false, message: 'Failed to create user.' })
-			else		res.json({success: true,  user: doc}) // or token
-		})
-	},
+	// newUser: function(req, res) {
+	// 	User.create(req.body, function(err, doc) {
+	// 		if (err)    bounce(res, 'Failed to create user.')
+	// 		else		res.json({success: true,  user: doc}) // or token
+	// 	})
+	// },
 
 }
