@@ -2,6 +2,7 @@ var player = require('./controllers/playerCtrl'),
 	team   = require('./controllers/teamCtrl'),
 	game   = require('./controllers/gameCtrl'),
 	user   = require('./controllers/userCtrl'),
+	stats  = require('./controllers/statsCtrl'),
 	auth   = require('./auth')
 
 module.exports = function(app, express) {
@@ -12,17 +13,14 @@ module.exports = function(app, express) {
 	apiRouter.use(auth.decodeToken)
 
 // Player routes
-	apiRouter.route('/player/:id')
-		.get(player.get)
-
 	apiRouter.route('/player')
 		.post(player.create)
 		.put(player.update)
 
+	apiRouter.route('/player/:id')
+		.get(player.get)
+		
 // Team routes
-	apiRouter.route('/team/:id')
-		.get(team.get)
-
 	apiRouter.route('/team')
 		.post(team.create)
 		.put(team.update)
@@ -36,11 +34,33 @@ module.exports = function(app, express) {
 	apiRouter.route('/team/playerTeams')
 		.get(team.playerTeams)
 		
+	apiRouter.route('/team/:id')
+		.get(team.get)
 
 // Game routes
 	apiRouter.route('/game')
 		.post(game.create)
 		.put(game.update)
+
+// Stats routes
+	apiRouter.route('/stats/game/:id')
+		.get(stats.game)
+
+	apiRouter.route('/stats/team/games/:id')
+		.get(stats.teamGames)
+	apiRouter.route('/stats/team/points/:id')
+		.get(stats.teamPoints)
+
+	apiRouter.route('/stats/player/games/:id')
+		.get(stats.playerGames)
+	apiRouter.route('/stats/player/points/:id')
+		.get(stats.playerPoints)
+
+	apiRouter.route('/stats/gamesWith/:team/:player')
+		.get(stats.gamesWith)
+	apiRouter.route('/stats/pointsWith/:team/:player')
+		.get(stats.pointsWith)
+
 
 	return apiRouter
 

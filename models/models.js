@@ -28,11 +28,11 @@ var teamSchema = new mongoose.Schema({
 })
 
 var gameSchema = new mongoose.Schema({
-	teams  : [ObjectId],
-	rosters: [ObjectId],
-	points : Array,
-	score  : Array,
-	misc   : Object
+	teams : [ObjectId],
+	roster: [ObjectId],
+	points: Array,
+	score : Array,
+	misc  : Object
 })
 
 userSchema.pre('save', function(next) {

@@ -10,14 +10,6 @@ var success = function(res, data) {
 	res.json(data)
 }
 
-var addOrDrop = function(req, res, team) {
-	if (req.body.add) 	team.roster.push(req.body.player)
-	else {
-		var index = team.roster.indexOf(req.body.player)
-		team.roster.splice(index, 1)
-	}
-}
-
 module.exports = {
 
 	checkCaptain: function(req, res, next) {
@@ -43,7 +35,7 @@ module.exports = {
 
 	update: function(req, res) {
 		Team.findByIdAndUpdate(req.body._id, req.body, {new:true},
-			function(err, doc) {
+			function(err, teamDoc) {
 				if (err) 	bounce(res, err)
 				else 	 	success(res, { team: teamDoc })
 			})
