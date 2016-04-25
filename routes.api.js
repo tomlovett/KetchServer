@@ -46,6 +46,9 @@ module.exports = function(app, express) {
 		.get(game.get)
 
 // Stats routes
+	apiRouter.route('/stats/game/:id')
+		.get(stats.game)	
+
 	apiRouter.route('/stats/team/games/:id')
 		.get(stats.teamGames)
 	apiRouter.route('/stats/team/points/:id')

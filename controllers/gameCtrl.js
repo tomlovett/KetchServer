@@ -22,6 +22,7 @@ module.exports = {
 	update: function(req, res) {
 		Game.findByIdAndUpdate(req.body._id, req.body, {new: true},
 		function(err, doc) {
+			console.log('update -> doc: ', doc)
 			if (err)	bounce(res, 'Database error.')
 			else 		success(res, { game: doc })
 		})

@@ -16,15 +16,34 @@ var bothIn = function(arr, itemA, itemB) {
 	return (arr.indexOf(itemA) !== -1 && arr.indexOf(itemB) !== -1)
 }
 
+var formatGame = function(game) {
+	var total     = {}
+	var plusMinus = {}
+	game.roster.forEach(function(playerID) {
+		total[playerID]     = 0
+		plusMinus[playerID] = 0
+	})
+	console.log('total & plusMinus generated')
+	game.points.forEach(function(point) {
+		if (point.result)   var outcome = 1
+		else				var outcome = -1
+		// stats formatting
+		point.line.forEach(function(playerID) {
+			total.playerID     += 1
+			plusMinus.playerID += outcome
+		})
+	})
+	return { game: game, total: total, plusMinus: plusMinus }
+}
+
 module.exports = {
 
 	game: function(req, res) {
-		Game.findById(req.params.id, function(err, doc) {
+		Game.findById(req.params.id, function(err, game) {
 			console.log('stats.game -> err: ', err)
-			console.log('stats.game -> doc: ', doc)
-			// formatting
+			console.log('stats.game -> game: ', game)
 			if (err)	bounce(res, err)
-			else		success(res, { game: doc })
+			else 		success(res, formatGame(game))
 		})
 	},
 
