@@ -42,10 +42,10 @@ module.exports = function(app, express) {
 		.post(game.create)
 		.put(game.update)
 
-// Stats routes
-	apiRouter.route('/stats/game/:id')
-		.get(stats.game)
+	apiRouter.route('/game/:id')
+		.get(game.get)
 
+// Stats routes
 	apiRouter.route('/stats/team/games/:id')
 		.get(stats.teamGames)
 	apiRouter.route('/stats/team/points/:id')
@@ -60,6 +60,9 @@ module.exports = function(app, express) {
 		.get(stats.gamesWith)
 	apiRouter.route('/stats/pointsWith/:team/:player')
 		.get(stats.pointsWith)
+
+	// apiRouter.route('/stats/friends/:friendA/:friendB')
+		// .get(stats.friends) // can make big, modular; sweet idea though
 
 
 	return apiRouter

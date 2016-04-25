@@ -22,13 +22,14 @@ module.exports = {
 		Game.findById(req.params.id, function(err, doc) {
 			console.log('stats.game -> err: ', err)
 			console.log('stats.game -> doc: ', doc)
+			// formatting
 			if (err)	bounce(res, err)
 			else		success(res, { game: doc })
 		})
 	},
 
 	teamGames: function(req, res) {
-		Team.find({ teams: { $in: [req.params.id] }}, function(err, docs) {
+		Game.find({ teams: { $in: [req.params.id] }}, function(err, docs) {
 			console.log('stats.teamGames -> err: ', err)
 			console.log('stats.teamGames -> docs: ', docs)
 			if (err) 	bounce(res, err)
@@ -37,7 +38,7 @@ module.exports = {
 	},
 
 	playerGames: function(req, res) {
-		Player.find({ teams: { $in: [req.params.id] }}, function(err, docs) {
+		Game.find({ roster: { $in: [req.params.id] }}, function(err, docs) {
 			console.log('stats.teamGames -> err: ', err)
 			console.log('stats.playerGames -> docs: ', docs)
 			if (err) 	bounce(res, err)
@@ -67,6 +68,7 @@ module.exports = {
 			console.log('stats.playerGames -> docs: ', docs)
 			if (err) 	bounce(res, err)
 			else {
+				console.log('playerPoints docs found; processing...')
 				var points = []
 				docs.forEach(function(game) {
 					game.points.forEach(function(point) {
@@ -82,21 +84,23 @@ module.exports = {
 	gamesWith: function(req, res) {
 		var friendA = req.params.friendA
 		var friendB = req.params.friendB
-		Game.find({ roster: { $in: { [friendA, friendB] }}, function(err, docs) {
+		Game.find({ roster: { $in: [friendA, friendB] }}, function(err, docs) {
 			if (err)	bounce(res, err)
-			var games = []
-			docs.forEach(function(game) {
-				if ( bothIn(game.roster, friendA, friendB) )
-					games.push(game)
-			})
-			success(res, { games: games })
-		}})
+			else {
+				var games = []
+				docs.forEach(function(game) {
+					if ( bothIn(game.roster, friendA, friendB) )
+						games.push(game)
+				})
+				success(res, { games: games })
+			}
+		})
 	},
 
 	pointsWith: function(req, res) {
 		var friendA = req.params.friendA
 		var friendB = req.params.friendB
-		Game.find({ roster: { $in: { [friendA, friendB] }}, function(err, docs) {
+		Game.find({ roster: { $in: [friendA, friendB] }}, function(err, docs) {
 			if (err)	bounce(res, err)
 			var points = []
 			docs.forEach(function(game) {
@@ -107,7 +111,7 @@ module.exports = {
 				})
 			})
 			success(res, { points: points })
-		}})
+		})
 	},
 	// pointsVersus built off this; same idea, both on at same time but in different lines
 

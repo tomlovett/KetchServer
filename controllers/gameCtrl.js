@@ -27,4 +27,11 @@ module.exports = {
 		})
 	},
 
+	get: function(req, res, next) {
+		Game.findById(req.params.id, function(err, gameDoc) {
+			if (err)  	bounce(res, err)
+			else 		success(res, { game: gameDoc })
+		})
+	},
+
 }
