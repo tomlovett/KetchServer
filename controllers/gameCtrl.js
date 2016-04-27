@@ -35,4 +35,19 @@ module.exports = {
 		})
 	},
 
+	undoPoint: function(req, res) {
+		Game.findById(req.params.id, function(err, gameDoc) {
+			if (err) 	bounce(res, err)
+			else {
+				var point = gameDoc.points.pop()
+				if (point.result)  { gameDoc.score[0] -= 1 }
+				else			   { gameDoc.score[1] -= 1 }
+				gameDoc.save(function(errTwo, newDoc) {
+					if (errTwo)	bounce(res, err)
+					else		success(res, { game: newDoc })
+				})
+			}
+		})
+	}
+
 }

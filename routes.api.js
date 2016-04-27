@@ -42,6 +42,9 @@ module.exports = function(app, express) {
 		.post(game.create)
 		.put(game.update)
 
+	apiRouter.route('/game/undoPoint/:id')
+		.get(game.undoPoint)
+
 	apiRouter.route('/game/:id')
 		.get(game.get)
 
