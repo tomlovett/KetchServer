@@ -6,7 +6,7 @@ var ObjectId = mongoose.Schema.Types.ObjectId
 var userSchema = new mongoose.Schema({
 	email   : String,
 	password: String,
-	player  : ObjectId,
+	player  : { type: ObjectId, ref: 'Player' },
 })
 
 var playerSchema = new mongoose.Schema({
@@ -24,14 +24,14 @@ var teamSchema = new mongoose.Schema({
 	alias    : String, // "tangential scorned panda"
 	primary  : String,
 	secondary: String,
-	roster   : [{ type: ObjectId, ref: 'Player'}],
-	captains : [{ type: ObjectId, ref: 'Player'}],
+	roster   : [{ type: ObjectId, ref: 'Player' }],
+	captains : [{ type: ObjectId, ref: 'Player' }],
 	misc     : Object,
 })
 
 var gameSchema = new mongoose.Schema({
-	teams : [ObjectId],
-	roster: [ObjectId],
+	teams : [{ type: ObjectId, ref: 'Team'   }],
+	roster: [{ type: ObjectId, ref: 'Player' }],
 	points: Array,
 	score : Array,
 	misc  : Object

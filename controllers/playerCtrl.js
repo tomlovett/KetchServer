@@ -27,7 +27,6 @@ module.exports = {
 	},
 
 	update: function(req, res) {
-		console.log('player.update -> req.body: ', req.body)
 		Player.findByIdAndUpdate(req.body._id, req.body, {new: true}, 
 		function(err, doc) {
 			if (err)  	bounce(res, 'Player not found.')
