@@ -1,5 +1,6 @@
-var models = require('../models/models.js')
-var Game = models.Game
+var models   = require('../models/models.js')
+var Game     = models.Game
+var gameFunc = require('../abstractions/gameFunctions.js') // later
 
 var bounce = function(res, msg) {
 	res.json({success: false, message: msg})
@@ -11,30 +12,72 @@ var success = function(res, data) {
 }
 
 var gameRoster = function(game) {
+	if (!game.perf) {
+		game.perf = {}
+		console.log('perf created in gameRoster')
+	}
 	game.points.forEach(function(point) {
+		if (point.result) 	var result = 1
+		else				var result = -1
 		point.line.forEach(function(player) {
-			if (game.roster.indexOf(player) == -1)
-				game.roster.push(player)
+			if (!game.perf[player]) {
+				game.perf[player] = { points: 0, plusMinus: 0 }
+			}
+			game.perf[player]['points']    += 1
+			game.perf[player]['plusMinus'] += result
 		})
 	})
+	for (var playerID in game.perf) {
+		game.roster.push(playerID)
+	}
+	console.log('gameRoster -> game: ', game)
 }
 
 var newGameDoc = function(team) {
 	return {
-		teams: [team._id],
-		score: [0, 0],
-		points: [],
-		rosters: []
+		teams  : [team._id],
+		score  : [0, 0],
+		points : [],
+		perf   : {},  // shortcut for playerPerformance stats
+		rosters: [],  // shortcut for knowing whether a player was in a game
 	}
+}
+
+var recordPerf = function(game, point) {
+	point.line.forEach(function(player) {
+		console.log('recordPerf -> player: ', player)
+		if (game.perf[player])	game.perf.player.points += 1
+		else					game.perf[player] = { points: 1, plusMinus: 0 }
+		if (point.result)		game.perf.player.plusMinus += 1
+		else					game.perf.player.plusMinus -= 1
+	})
+}
+
+var recordPoint = function(game, point) {
+	if (point.result)		game.score[0] += 1
+	else				  	game.score[1] += 1
+	game.points.push(point)
+	recordPerf(game, point)
 }
 
 module.exports = {
 
 	create: function(req, res) {
 		var newGame = newGameDoc(req.body.team)
+		console.log('create -> newGame: ', newGame)
 		Game.create(newGame, function(err, doc) {
 			if (err)  bounce(res, 'Database error.')
-			else 	  success(res, { game: doc })
+			else 	 {
+				console.log('create -> doc: ', doc)
+				success(res, { game: doc })
+			}
+		})
+	},
+
+	get: function(req, res, next) {
+		Game.findById(req.params.id, function(err, doc) {
+			if (err)  	bounce(res, err)
+			else 		success(res, { game: doc })
 		})
 	},
 
@@ -46,10 +89,19 @@ module.exports = {
 		})
 	},
 
-	get: function(req, res, next) {
-		Game.findById(req.params.id, function(err, gameDoc) {
-			if (err)  	bounce(res, err)
-			else 		success(res, { game: gameDoc })
+	point: function(req, res) {
+		console.log('req.params: ', req.params)
+		Game.findById(req.params.id, function(err, doc) {
+			if (err) 	bounce(res, err)
+			else {
+				console.log('doc before: ', doc)
+				recordPoint(doc, req.body)
+				console.log('doc after: ', doc)
+				doc.save(function(newErr, newDoc) {
+					if (newErr)		bounce(res, newErr)
+					else			success(res, { game: newDoc })
+				})
+			}
 		})
 	},
 
@@ -60,8 +112,8 @@ module.exports = {
 				var point = gameDoc.points.pop()
 				if (point.result)   gameDoc.score[0] -= 1
 				else 				gameDoc.score[1] -= 1
-				gameDoc.save(function(errTwo, newDoc) {
-					if (errTwo)	bounce(res, err)
+				gameDoc.save(function(newErr, newDoc) {
+					if (newErr)	bounce(res, newErr)
 					else		success(res, { game: newDoc })
 				})
 			}
@@ -73,9 +125,9 @@ module.exports = {
 			if (err)	bounce(res, err)
 			else {
 				gameRoster(gameDoc)
-				gameDoc.save(function(errTwo, newDoc) {
-					if (err)	bounce(res, err)
-					else		success(res, {})
+				gameDoc.save(function(newErr, newDoc) {
+					if (newErr)	bounce(res, err)
+					else		success(res, newDoc)
 				})
 			}
 		})

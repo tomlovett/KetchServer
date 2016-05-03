@@ -45,6 +45,9 @@ module.exports = function(app, express) {
 	apiRouter.route('/game/close/:id')
 		.get(game.close)
 
+	apiRouter.route('/game/point/:id')
+		.put(game.point)
+
 	apiRouter.route('/game/undoPoint/:id')
 		.get(game.undoPoint)
 
