@@ -11,26 +11,25 @@ var success = function(res, data) {
 	res.json(data)
 }
 
-var gameRoster = function(game) {
+var closeGame = function(game) {
 	if (!game.perf) {
 		game.perf = {}
-		console.log('perf created in gameRoster')
+		console.log('perf created in closeGame')
 	}
 	game.points.forEach(function(point) {
 		if (point.result) 	var result = 1
 		else				var result = -1
 		point.line.forEach(function(player) {
 			if (!game.perf[player]) {
-				game.perf[player] = { points: 0, plusMinus: 0 }
+				game.perf[player] = { points: 0, '+/-': 0 }
 			}
-			game.perf[player]['points']    += 1
-			game.perf[player]['plusMinus'] += result
+			game.perf[player]['points'] += 1
+			game.perf[player]['+/-']    += result
 		})
 	})
 	for (var playerID in game.perf) {
 		game.roster.push(playerID)
 	}
-	console.log('gameRoster -> game: ', game)
 }
 
 var newGameDoc = function(team) {
@@ -90,13 +89,10 @@ module.exports = {
 	},
 
 	point: function(req, res) {
-		console.log('req.params: ', req.params)
 		Game.findById(req.params.id, function(err, doc) {
 			if (err) 	bounce(res, err)
 			else {
-				console.log('doc before: ', doc)
 				recordPoint(doc, req.body)
-				console.log('doc after: ', doc)
 				doc.save(function(newErr, newDoc) {
 					if (newErr)		bounce(res, newErr)
 					else			success(res, { game: newDoc })
@@ -124,7 +120,7 @@ module.exports = {
 		Game.findById(req.params.id, function(err, gameDoc) {
 			if (err)	bounce(res, err)
 			else {
-				gameRoster(gameDoc)
+				closeGame(gameDoc)
 				gameDoc.save(function(newErr, newDoc) {
 					if (newErr)	bounce(res, err)
 					else		success(res, newDoc)
