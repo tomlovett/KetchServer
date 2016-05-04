@@ -32,9 +32,9 @@ var teamSchema = new mongoose.Schema({
 var gameSchema = new mongoose.Schema({
 	teams : [{ type: ObjectId, ref: 'Team'   }],
 	roster: [{ type: ObjectId, ref: 'Player' }],
-	perf  : Object,
 	points: Array,
 	score : Array,
+	perf  : Object,
 	misc  : Object
 })
 

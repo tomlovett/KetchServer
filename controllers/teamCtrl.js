@@ -59,8 +59,16 @@ module.exports = {
 			})
 	},
 
-	playerTeams: function(req, res) {
+	myTeams: function(req, res) {
 		Team.find().where('roster').in([req.token.player])
+			.exec(function(err, teamDocs) {
+				if (err)	bounce(res, err)
+				else		success(res, { teams: teamDocs })
+			})
+	},
+
+	playerTeams: function(req, res) {
+		Team.find().where('roster').in([req.params.id])
 			.exec(function(err, teamDocs) {
 				if (err)	bounce(res, err)
 				else		success(res, { teams: teamDocs })
