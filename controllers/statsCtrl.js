@@ -30,8 +30,8 @@ var aggregatePlayer = function(gameDocs, player) {
 	var aggDiff   = 0
 	gameDocs.forEach(function(game) {
 		numGames  += 1
-		aggPoints += game.perf.player['points']
-		aggDiff   += game.perf.player['+/-']
+		aggPoints += game.perf[player]['points']
+		aggDiff   += game.perf[player]['+/-']
 	})
 	return { games: numGames, points: aggPoints, '+/-': aggDiff }
 }
@@ -41,16 +41,14 @@ var aggregateTeam = function(gameDocs, roster) {
 	roster.forEach(function(player) {
 		teamPerf[player] = { games: 0, points: 0, '+/-': 0 }
 	})
-	console.log('aggregateTeam -> teamPerf: ', teamPerf)
 	gameDocs.forEach(function(game) {
-		if (game.perf)
 		roster.forEach(function(player) {
-			if (game.perf.player) {
-				teamPerf.player['games']  += 1
-				teamPerf.player['points'] += game.perf.player['points']
-				teamPerf.player['+/-']    += game.perf.player['+/-']
-			}
-		})
+			if (game.perf[player]) {
+				teamPerf[player]['games']  += 1
+				teamPerf[player]['points'] += game.perf[player]['points']
+				teamPerf[player]['+/-']    += game.perf[player]['+/-']
+			} // I don't know why it has to be all bracket notation
+		})		// but if it's dot notation it doesn't work
 	})
 	return teamPerf
 }
@@ -63,8 +61,8 @@ module.exports = {
 
 	teamGames: function(req, res) {
 		Game.find({ teams: { $in: [req.params.id] }}, function(err, docs) {
-			console.log('stats.teamGames -> err: ', err)
-			console.log('stats.teamGames -> docs: ', docs)
+			// console.log('stats.teamGames -> err: ', err)
+			// console.log('stats.teamGames -> docs: ', docs)
 			if (err) 	bounce(res, err)
 			else {
 				var record = winLoss(req.params.id, docs)
@@ -96,7 +94,6 @@ module.exports = {
 		Game.find({ teams: { $in: [req.params.id] }}, function(err, docs) {
 			if (err) 	bounce(res, err)
 			else {
-				console.log('teamPerf -> req.body: ', req.body)
 				var teamPerf = aggregateTeam(docs, req.body)	
 				success(res, { perf: teamPerf })
 			}
