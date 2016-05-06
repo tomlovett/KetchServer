@@ -15,7 +15,7 @@ var closeGame = function(game) {
 	if (!game.perf) {
 		game.perf = {}
 		console.log('perf created in closeGame')
-	}
+	} // should be able to remove; a workaround for an old database issue
 	game.points.forEach(function(point) {
 		if (point.result) 	var result = 1
 		else				var result = -1
@@ -63,7 +63,6 @@ module.exports = {
 
 	create: function(req, res) {
 		var newGame = newGameDoc(req.body.team)
-		console.log('create -> newGame: ', newGame)
 		Game.create(newGame, function(err, doc) {
 			if (err)  bounce(res, 'Database error.')
 			else 	 {

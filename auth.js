@@ -35,7 +35,7 @@ module.exports = {
 
 	signup: function(req, res) { // passed in {linked: true} on client side
 		Player.create(req.body, function(err, player) {
-			req.body.player = player._id	// add player._id to user model
+			req.body.player = player._id 	// links player id to user
 			User.create(req.body, function(err, user) {
 				if (err)  	bounce(res, 'Database error.')
 				else  		sendToken(res, user)

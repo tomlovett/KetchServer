@@ -12,6 +12,8 @@ var success = function(res, data) {
 	res.json(data)
 }
 
+/*These functions can be moved into a module.
+Especially as they grow in number/complexity.*/
 var winLoss = function(teamID, games) {
 	var record = [0, 0]
 	games.forEach(function(game) {
@@ -56,13 +58,12 @@ var aggregateTeam = function(gameDocs, roster) {
 module.exports = {
 
 	teamCard: function(req, res) {
-
+		// currently a bunch of different calls on the front-end
+		// could consolidate later
 	},
 
 	teamGames: function(req, res) {
 		Game.find({ teams: { $in: [req.params.id] }}, function(err, docs) {
-			// console.log('stats.teamGames -> err: ', err)
-			// console.log('stats.teamGames -> docs: ', docs)
 			if (err) 	bounce(res, err)
 			else {
 				var record = winLoss(req.params.id, docs)
@@ -73,8 +74,6 @@ module.exports = {
 
 	playerGames: function(req, res) {
 		Game.find({ roster: { $in: [req.params.id] }}, function(err, docs) {
-			console.log('stats.teamGames -> err: ', err)
-			console.log('stats.playerGames -> docs: ', docs)
 			if (err) 	bounce(res, err)
 			else		success(res, { games: docs })
 		})

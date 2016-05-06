@@ -13,9 +13,9 @@ var success = function(res, data) {
 module.exports = {
 
 	checkCaptain: function(req, res, next) {
-		if (req.user in req.team.captains)  { next() } // not final
+		if (req.user in req.team.captains)  { next() }
 		else res.status(403).send('Permission denied: not a captain.')
-	},
+	}, // for future permission-checking
 
 	create: function(req, res) {
 		req.body.roster   = [req.token.player]
@@ -34,11 +34,11 @@ module.exports = {
 	},
 
 	update: function(req, res) {
-		Team.findByIdAndUpdate(req.body._id, req.body, {new:true},
+		Team.findByIdAndUpdate(req.body._id, req.body, { new: true },
 			function(err, teamDoc) {
 				if (err) 	bounce(res, err)
 				else 	 	success(res, { team: teamDoc })
-			})
+			}) // need to verify the above works before deleting the code below
 		// var data = req.body.team
 		// if (data.name)     req.team.name     = data.name
 		// if (data.color1)   req.team.color1   = data.color1
@@ -65,7 +65,7 @@ module.exports = {
 				if (err)	bounce(res, err)
 				else		success(res, { teams: teamDocs })
 			})
-	},
+	}, // redundant; can delete after modifying front-end code
 
 	playerTeams: function(req, res) {
 		Team.find().where('roster').in([req.params.id])

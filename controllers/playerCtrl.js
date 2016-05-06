@@ -16,7 +16,7 @@ module.exports = {
 		Player.create(req.body, function(err, doc) {
 			if (err) bounce(res, 'Database error.')
 			else     success(res, { player: doc, teams: req.body.teams })
-		})
+		}) // teams is unused; delete
 	},
 
 	get: function(req, res) {
