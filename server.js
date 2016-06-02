@@ -11,6 +11,7 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use(cors())
 app.use(logger('dev'))
+app.disable('etag') // prevents server from sending 304 in lieu of data
 
 mongoose.connect(config.database)
 

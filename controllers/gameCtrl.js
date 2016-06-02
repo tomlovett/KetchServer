@@ -122,7 +122,10 @@ module.exports = {
 				closeGame(gameDoc)
 				gameDoc.save(function(newErr, newDoc) {
 					if (newErr)	bounce(res, err)
-					else		success(res, newDoc)
+					else	{
+						success(res, newDoc)
+						console.log('closeGame -> newDoc: ', newDoc)
+					}
 				})
 			}
 		})

@@ -66,6 +66,7 @@ module.exports = {
 		Game.find({ teams: { $in: [req.params.id] }}, function(err, docs) {
 			if (err) 	bounce(res, err)
 			else {
+				console.log('teamGames -> docs.length: ', docs.length)
 				var record = winLoss(req.params.id, docs)
 				success(res, { games: docs, record: record })
 			}
@@ -102,7 +103,9 @@ module.exports = {
 	gamePerf: function(req, res) {
 		Game.findById(req.params.id, function(err, doc) {
 			if (err)	bounce(res, err)
-			else		success(res, { perf: doc.perf })
+			else	{
+				success(res, { perf: doc.perf })
+			}
 		})
 	},
 
